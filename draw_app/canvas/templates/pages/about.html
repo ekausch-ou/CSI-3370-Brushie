@@ -1,0 +1,54 @@
+{% load static %}
+
+<html>
+    <head>
+        {% include 'elements/includes.html' %}
+        <title>About</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            html, body {
+                height: 100%;
+            }
+            body {
+                display: flex;
+                flex-direction: column;
+            }
+            main {
+                flex: 1; /* takes all remaining space so footer is pushed down */
+            }
+        </style>
+    </head>
+    <body>
+        {% include 'elements/navbar.html' with active="about" %}
+
+        <main class="d-flex flex-column pt-2 pb-2">
+            <div class="vstack h-100">
+                <div class="container-fluid text-center h-100">
+                    <div class="row mb-5 d-flex justify-content-center align-items-top h-100">
+                        <h2 class="display-3 mb-4">CSI-3370</h2>
+                        <div>
+                            <h2>Brushie</h2>
+                            <p style="max-width: 600px; margin: 0 auto;">
+                                In today’s day and age, high-quality illustration software is becoming more and more expensive. Adobe Illustrator, for example, offers an annual plan of a whopping $263.88 per year, and yet it is the standard for most industries with regards to graphic design and digital illustration (Illustrator Pricing & Membership Plans, 2026). The solution to this is a free-to-use, open source, browser-based illustration program that is easy to use on any device.
+                            </p>
+                            <a href="https://github.com/ekausch-ou/CSI-2999-Pixel-Pursuit" class="btn btn-outline-primary mt-3">GitHub</a>
+                        </div>
+                        <div></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="bg-light text-center text-muted py-3 mt-5">
+            <div class="container">
+                <p class="mb-1">
+                    All images and audio are either royalty-free and sourced from 
+                    <a href="https://pixabay.com/" target="_blank">Pixabay</a> and 
+                    <a href="https://www.vecteezy.com/" target="_blank">Vecteezy</a>, 
+                    or created by our team.
+                </p>
+                <p class="mb-0">&copy; 2026 Brushie. All rights reserved.</p>
+            </div>
+        </footer>
+    </body>
+</html>
