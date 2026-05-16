@@ -1,32 +1,60 @@
 {% load static %}
-
-<style>
-    .back {
-        background: linear-gradient(135deg, #00dacb9f, #886abbce);
-    }
-</style>
 <html>
     <head>
         {% include 'elements/includes.html' %}
         <title>Brushie</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            body {
+                background: #cbd9f8 !important;
+            }
+            .card {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+            }
+
+            .card-body {
+                flex: 1;
+                min-height: 0;
+                overflow: hidden;
+            }
+        </style>
     </head>
-<body>
-    
-{% include 'elements/navbar.html' with active="home" %}
-<body>
-    <div class="d-flex flex-column pt-2 pb-2" style="height: calc(100vh - 56px);">
-        <div class="vstack h-100">
-            <div class="container-fluid h-100" style="max-width: 70%;">
-                <div class="row mb-5">
-                    <div class="col text-center">
-                        <h1 class="display-2">Brushie</h1>
+    <body>
+        {% include 'elements/navbar.html' with active="home" %}
+        <div class="d-flex flex-column" style="height: calc(100vh - 60px);">
+            <div class="d-flex flex-column container-fluid h-100" style="max-width: 90%; max-height: 95%;">
+                <div class="row justify-content-center h-100">                                
+                    <div class="card p-0 m-3 h-100">
+                        <div class="card-header">            
+                                <button class="btn btn-outline-primary" id="pencil-button">Pencil</button>
+                        </div>
+                        <div class="card-body p-0 h-100">
+                            <canvas id="drawing-canvas" style="width:100%; height:100%; display:block; overflow:hidden;"></canvas>
+                        </div>
                     </div>
                 </div>
-                <div class="row d-flex flex-row justify-content-center">
-                   
-                </div>
             </div>
+
         </div>
-    </div>
-</body>
+        <script type="module" src="{% static 'frontend/app.js' %}"></script>
+    </body>
+</html>
+<script>
+    const pencilButton = document.getElementById("pencil-button");
+    pencilButton.addEventListener("click", () => {
+        pencilButton.classList.toggle("active");
+    });
+
+    const canvas = document.getElementById("drawing-canvas");
+    function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+</script>

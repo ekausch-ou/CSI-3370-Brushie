@@ -1,0 +1,344 @@
+<style>
+    body {
+        background: #cbd9f8 !important;
+    }
+    .card {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .card-body {
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+    }
+</style>
+<html>
+    <head>
+        <title>Brushie</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <div class="d-flex flex-column" style="height: 100%">
+            <div class="d-flex flex-column container-fluid h-100" style="max-width: 90%; max-height: 95%;">
+                <div class="row justify-content-center h-100">                                
+                    <div class="card p-0 m-3 h-100">
+                        <div class="card-header">            
+                                <button class="btn btn-outline-primary" id="pencil-button">Pencil</button>
+                        </div>
+                        <div class="card-body p-0 h-100">
+                            <canvas id="drawing-canvas" style="width:100%; height:100%; display:block; overflow:hidden;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+<script>
+    const pencilButton = document.getElementById("pencil-button");
+    pencilButton.addEventListener("click", () => {
+        pencilButton.classList.toggle("active");
+    });
+
+    const canvas = document.getElementById("drawing-canvas");
+    function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+    }
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+// ============================================================
+//                 engine.js - Main Canvas Engine
+// ============================================================
+//
+// The CanvasEngine class is the core controller for the drawing app.
+//
+// Responsibilities:
+// - Stores references to the HTML canvas and rendering context
+// - Manages active drawing tools
+// - Handles pointer/mouse interactions
+// - Converts screen coordinates into canvas coordinates
+// - Controls canvas resizing behavior
+// - Provides helper methods for brush styling
+//
+// This class acts as the communication layer between:
+//     User Input  <->  Drawing Tools  <->  Canvas Rendering
+//
+// Example Flow:
+// 1. User presses mouse on canvas
+// 2. CanvasEngine receives pointer event
+// 3. Active tool is notified
+// 4. Tool performs drawing logic using engine.ctx
+
+    class CanvasEngine {
+        constructor(canvas) {
+            this.canvas = canvas;
+
+            this.ctx = canvas.getContext('2d');
+
+            this.tools = {};
+            this.activeTool = null;
+
+            this.resizeCanvas();
+            this.bindEvents();
+
+            window.addEventListener('resize', () => {
+                this.resizeCanvas();
+            });
+
+            this.setupContext();
+        }
+
+        setupContext() {
+            this.ctx.lineCap = 'round';
+            this.ctx.lineJoin = 'round';
+            this.ctx.strokeStyle = '#000000';
+            this.ctx.lineWidth = 2;
+        }
+
+        setStrokeStyle(color) {
+            this.ctx.strokeStyle = color;
+        }
+
+        setFillStyle(color) {
+            this.ctx.fillStyle = color;
+        }
+
+        setLineWidth(width) {
+            this.ctx.lineWidth = width;
+        }
+
+        resizeCanvas() {
+            const rect = this.canvas.getBoundingClientRect();
+
+            this.canvas.width = rect.width;
+            this.canvas.height = rect.height;
+        }
+
+        registerTool(tool) {
+            this.tools[tool.name] = tool;
+        }
+
+        getTool(name) {
+            return this.activeTool?.getName() ?? null;
+        }
+
+        setTool(name) {
+            this.activeTool = this.tools[name];
+        }
+
+        clearTool(name) {
+            this.activeTool = null;
+        }
+
+        getPointerPosition(event) {
+            const rect = this.canvas.getBoundingClientRect();
+
+            return {
+                x: event.clientX - rect.left,
+                y: event.clientY - rect.top
+            };
+        }
+
+        bindEvents() {
+            this.canvas.addEventListener('pointerdown', (event) => {
+                if (!this.activeTool) return;
+
+                this.activeTool.onPointerDown(
+                    this.getPointerPosition(event),
+                    this
+                );
+            });
+
+            this.canvas.addEventListener('pointermove', (event) => {
+                if (!this.activeTool) return;
+
+                this.activeTool.onPointerMove(
+                    this.getPointerPosition(event),
+                    this
+                );
+            });
+
+            this.canvas.addEventListener('pointerup', (event) => {
+                if (!this.activeTool) return;
+
+                this.activeTool.onPointerUp(
+                    this.getPointerPosition(event),
+                    this
+                );
+            });
+
+            this.canvas.addEventListener('pointerleave', (event) => {
+                if (!this.activeTool) return;
+
+                this.activeTool.onPointerUp(
+                    this.getPointerPosition(event),
+                    this
+                );
+            });
+        }
+    }
+
+    
+// ============================================================
+//                 base-tool.js - Base Tool Class
+// ============================================================
+//
+// BaseTool is the parent class for every drawing tool.
+//
+// Purpose:
+// - Provides a shared structure/interface for tools
+// - Ensures all tools implement the same event methods
+// - Makes the engine flexible and extensible
+//
+// Any new tool should extend BaseTool and override:
+//
+// - onPointerDown()
+// - onPointerMove()
+// - onPointerUp()
+//
+// This creates a standardized API so the engine can interact
+// with all tools the same way.
+//
+// Example Future Tools:
+// - EraserTool
+// - RectangleTool
+// - FillBucketTool
+// - LineTool
+// - CircleTool
+
+
+class BaseTool {
+    constructor(name) {
+        this.name = name;
+    }
+
+    getName() {
+        return this.name
+    }
+    onPointerDown(position, engine) {}
+    onPointerMove(position, engine) {}
+    onPointerUp(position, engine) {}
+}
+
+
+// ============================================================
+//                 pencil-tool.js - Base Tool Class
+// ============================================================
+//
+// PencilTool is a concrete drawing tool that extends BaseTool.
+//
+// Responsibilities:
+// - Tracks whether the user is currently drawing
+// - Starts a drawing path on pointer down
+// - Draws continuous lines while pointer moves
+// - Ends the path on pointer release
+//
+// Drawing Process:
+//
+// pointerdown
+//     -> beginPath()
+//     -> moveTo(start position)
+//
+// pointermove
+//     -> lineTo(new position)
+//     -> stroke()
+//
+// pointerup
+//     -> closePath()
+//     -> stop drawing
+//
+// This tool uses the canvas 2D rendering context provided
+// by the CanvasEngine.
+
+
+    class PencilTool extends BaseTool {
+        constructor() {
+            super('pencil');
+
+            this.isDrawing = false;
+        }
+
+        onPointerDown(position, engine) {
+            this.isDrawing = true;
+
+            const ctx = engine.ctx;
+
+            ctx.beginPath();
+            ctx.moveTo(position.x, position.y);
+        }
+
+        onPointerMove(position, engine) {
+            if (!this.isDrawing) return;
+
+            const ctx = engine.ctx;
+
+            ctx.lineTo(position.x, position.y);
+            ctx.stroke();
+        }
+
+        onPointerUp(position, engine) {
+            if (!this.isDrawing) return;
+
+            this.isDrawing = false;
+
+            engine.ctx.closePath();
+        }
+    }
+
+    
+// ============================================================
+//                 app.js - Main Application
+// ============================================================
+//
+// app.js initializes and connects the entire application.
+//
+// Responsibilities:
+// - Creates the CanvasEngine instance
+// - Creates drawing tool instances
+// - Registers tools with the engine
+// - Connects UI buttons to tool selection logic
+//
+// Application Startup Sequence:
+//
+// 1. Create CanvasEngine
+// 2. Create PencilTool
+// 3. Register tool with engine
+// 4. Attach button event listeners
+// 5. User can now draw
+//
+// This file acts as the "composition layer" of the app,
+// where all independent components are connected together.
+//
+// Future expansion examples:
+// - Register multiple tools
+// - Add color pickers
+// - Add brush size controls
+// - Add save/load functionality
+// - Add undo/redo systems
+
+    //const canvas = document.getElementById('drawing-canvas');
+    const engine = new CanvasEngine(canvas);
+
+    const pencilTool = new PencilTool();
+
+    engine.registerTool(pencilTool);
+
+    document
+        .getElementById('pencil-button')
+        .addEventListener('click', () => {
+            if (engine.getTool() == 'pencil') {
+                engine.clearTool('');
+            } else {
+                engine.setTool('pencil');
+            }
+        });
+</script>
