@@ -74,7 +74,8 @@ export class CanvasEngine {
 
             this.activeTool.onPointerDown(
                 this.getPointerPosition(event),
-                this
+                this,
+                event
             );
         });
 
@@ -83,7 +84,8 @@ export class CanvasEngine {
 
             this.activeTool.onPointerMove(
                 this.getPointerPosition(event),
-                this
+                this,
+                event
             );
         });
 
@@ -92,7 +94,8 @@ export class CanvasEngine {
 
             this.activeTool.onPointerUp(
                 this.getPointerPosition(event),
-                this
+                this,
+                event
             );
         });
 
@@ -101,7 +104,8 @@ export class CanvasEngine {
 
             this.activeTool.onPointerUp(
                 this.getPointerPosition(event),
-                this
+                this,
+                event
             );
         });
     }

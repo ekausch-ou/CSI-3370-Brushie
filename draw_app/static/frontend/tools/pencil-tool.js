@@ -7,10 +7,20 @@ export class PencilTool extends BaseTool {
         this.isDrawing = false;
     }
 
-    onPointerDown(position, engine) {
+    onPointerDown(position, engine, event) {
         this.isDrawing = true;
 
         const ctx = engine.ctx;
+
+        // LEFT CLICK = primary color
+        if (event.button === 0) {
+            ctx.strokeStyle = engine.activeColor ? engine.primaryColor : engine.secondaryColor;
+        }
+
+        // RIGHT CLICK = secondary color
+        if (event.button === 2) {
+            ctx.strokeStyle = engine.activeColor ? engine.secondaryColor : engine.primaryColor;
+        }
 
         ctx.beginPath();
         ctx.moveTo(position.x, position.y);

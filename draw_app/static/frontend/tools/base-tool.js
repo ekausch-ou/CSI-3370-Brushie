@@ -4,9 +4,10 @@ export class BaseTool {
     }
 
     getName() {
-        return this.name
+        return this.name;
     }
-    onPointerDown(position, engine) {}
-    onPointerMove(position, engine) {}
-    onPointerUp(position, engine) {}
+
+    onPointerDown(position, engine, event) {}
+    onPointerMove(position, engine, event) {}
+    onPointerUp(position, engine, event) {}
 }

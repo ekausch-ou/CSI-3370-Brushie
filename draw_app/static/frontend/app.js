@@ -3,18 +3,23 @@ import { PencilTool } from './tools/pencil-tool.js';
 
 const canvas = document.getElementById('drawing-canvas');
 
+canvas.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+});
+
 const engine = new CanvasEngine(canvas);
+window.engine = engine;
 
 const pencilTool = new PencilTool();
 
-engine.registerTool(pencilTool);
+window.engine.registerTool(pencilTool);
 
 document
-    .getElementById('pencil-button')
+    .getElementById('btn-pencil')
     .addEventListener('click', () => {
-        if (engine.getTool() == 'pencil') {
-            engine.clearTool('');
+        if (window.engine.getTool() == 'pencil') {
+            window.engine.clearTool('');
         } else {
-            engine.setTool('pencil');
+            window.engine.setTool('pencil');
         }
     });

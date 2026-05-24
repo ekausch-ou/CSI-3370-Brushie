@@ -6,13 +6,8 @@
         <title>Brushie</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <style>
-            body {
+            .bg-color {
                 background: #cbd9f8 !important;
-            }
-            .card {
-                display: flex;
-                flex-direction: column;
-                height: 100%;
             }
 
             .card-body {
@@ -21,8 +16,11 @@
                 overflow: hidden;
             }
         </style>
+        <script>
+        window.engine = null;
+        </script>
     </head>
-    <body>
+    <body class="bg-color">
         {% include 'elements/navbar.html' with active="home" %}
         <div class="d-flex flex-column" style="height: calc(100vh - 60px);">
             <div class="d-flex flex-column container-fluid h-100">                           
@@ -38,15 +36,3 @@
         <script type="module" src="{% static 'frontend/app.js' %}"></script>
     </body>
 </html>
-<script>
-    const canvas = document.getElementById("drawing-canvas");
-    function resizeCanvas() {
-        const rect = canvas.getBoundingClientRect();
-
-        canvas.width = rect.width;
-        canvas.height = rect.height;
-    }
-
-    window.addEventListener("resize", resizeCanvas);
-    resizeCanvas();
-</script>

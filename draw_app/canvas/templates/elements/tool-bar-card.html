@@ -10,283 +10,28 @@
         background-color: #f0f0f0;
         border: 1px solid #a5a3a3;
     }
-
-    /* Shapes Formating */
-    .shapes-scroll {
-        max-height: 60px;
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
-    .shapes-scroll::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .shapes-scroll::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    .shapes-scroll::-webkit-scrollbar-thumb {
-        background: rgba(0,0,0,0.3);
-        border-radius: 10px;
-    }
-    .shape-btn {
-        aspect-ratio: 1 / 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    /* Colors Formating */
-    .colors-grid {
-        display: grid;
-        grid-template-columns: repeat(11, 1fr);
-        gap: 0.5rem;
-        height: 100%;
-        align-content: center;
-    }
-    .color-swatch,
-    .custom-color-icon {
-        width: 20px;
-        height: 20px;
-        border-radius: 50%;
-        border: 1px solid #adb5bd;
-        padding: 0;
-        background-clip: padding-box;
-        cursor: pointer;
-        position: relative;
-    }
-    .color-swatch.selected {
-        outline: 3px solid #0d6efd;
-        outline-offset: 2px;
-    }
-
-    .color-swatch:hover,
-    .custom-color-icon:hover {
-        transform: scale(1.05);
-    }
-    .color-primary,
-    .color-secondary {
-        width: 28px;
-        height: 28px;
-    }
-    
-    .color-picker-trigger {
-        cursor: pointer;
-    }
-    .custom-color-icon {
-        width: 34px;
-        height: 34px;
-        display: inline-block;
-        background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
-    }
-    .custom-color-icon::after {
-        content: "+";
-        position: absolute;
-        right: -6px;
-        top: -8px;
-        font-size: 14px;
-        color: #6c757d;
-        font-weight: bold;
-        background: white;
-        border-radius: 50%;
-        line-height: 1;
+    .btn.selected {
+        background-color: #e0e1fa;
+        outline: 1px solid #0d6efd;
     }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@jaames/iro@5"></script>
 <div class="container-fluid mt-4 m-0 px-0 w-100">
     <div class="drawing-toolbar d-flex gap-1">
+        {% include 'toolbar/selection-card.html'%}
+        {% include 'toolbar/image-card.html'%}
+        {% include 'toolbar/tools-card.html'%}
+        {% include 'toolbar/brushes-card.html'%}
+        {% include 'toolbar/shapes-card.html'%}
+        {% include 'toolbar/colors-card.html'%}
         <!-- Mobile-only card -->
         <div class="card d-block d-md-none">
             <div class="card-body">
                 <h5 class="card-title">Mobile Card</h5>
-                <p class="card-text">Only visible on mobile.</p>
+                <p class="card-text"></p>
             </div>
         </div>
 
-        <!-- Section Card -->
-        <div class="card section-card d-none d-md-block ">
-            <div class="card-body pt-0">
-                <div class="section-title card-title text-center py-1">Selection</div>
-                <button class="btn p-2 pb-1 d-flex flex-column" style="aspect-ratio: 1/1;">
-                    <i class="bi bi-bounding-box-circles fs-2"></i>
-                    <i class="bi bi-chevron-compact-down fs-6"></i>
-                </button>
-            </div>
-        </div>
-        <!-- Image Card -->
-        <div class="card section-card d-none d-md-block">
-            <div class="card-body pt-0">
-                <div class="section-title card-title text-center py-1">Image</div>
-
-                <div class="d-grid gap-2" style="grid-template-columns: repeat(2, 1fr);">
-                    <button class="btn p-1" style="aspect-ratio: 1/1;">
-                        <i class="bi bi-arrow-clockwise"></i>
-                    </button>
-
-                    <button class="btn p-1" style="aspect-ratio: 1/1;">
-                        <i class="bi bi-symmetry-horizontal"></i>
-                    </button>
-                    
-                    <button class="btn p-1" style="aspect-ratio: 1/1;">
-                        <i class="bi bi-arrow-counterclockwise"></i>
-                    </button>
-
-                    <button class="btn p-1" style="aspect-ratio: 1/1;">
-                        <i class="bi bi-symmetry-vertical"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-        <!-- Tools Card -->
-        <div class="card section-card d-none d-md-block">
-            <div class="card-body pt-0">
-                <div class="section-title card-title text-center py-1">Tools</div>
-
-                <div class="d-grid gap-2" style="grid-template-columns: repeat(3, 1fr);">
-                    <button class="btn p-1" style="aspect-ratio: 1/1;">
-                        <i class="bi bi-pencil"></i>
-                    </button>
-                    
-                    <button class="btn p-1" style="aspect-ratio: 1/1;">
-                        <i class="bi bi-paint-bucket"></i>
-                    </button>
-                    
-                    <button class="btn p-1" style="aspect-ratio: 1/1;">
-                        <i class="bi bi-type"></i>
-                    </button>
-
-                    <button class="btn p-1" style="aspect-ratio: 1/1;">
-                        <i class="bi bi-eraser"></i>
-                    </button>
-
-                    <button class="btn p-1" style="aspect-ratio: 1/1;">
-                        <i class="bi bi-eyedropper"></i>
-                    </button>
-
-                    <button class="btn p-1" style="aspect-ratio: 1/1;">
-                        <i class="bi bi-zoom-in"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Brushes Card -->
-        <div class="card section-card d-none d-md-block ">
-            <div class="card-body pt-0">
-                <div class="section-title card-title text-center py-1">Brushes</div>
-                <button class="btn p-2 pb-1 d-flex flex-column" style="aspect-ratio: 1/1;">
-                    <i class="bi bi-brush fs-2"></i>
-                    <i class="bi bi-chevron-compact-down fs-6"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- Shapes Card -->
-        <div class="card section-card d-none d-md-block">
-            <div class="card-body pt-0">
-                <div class="section-title card-title text-center py-1">Shapes</div>
-
-                <!-- scrollable sub-card / inner panel -->
-                <div class="border rounded p-2 shapes-scroll">
-                    <div class="d-grid gap-1 shapes-grid" style="grid-template-columns: repeat(4, 1fr);">
-                        <button class="btn p-1 shape-btn" type="button">
-                            <i class="bi bi-slash-lg"></i>
-                        </button>
-
-                        <button class="btn p-1 shape-btn" type="button">
-                            <i class="bi bi-circle"></i>
-                        </button>
-
-                        <button class="btn p-1 shape-btn" type="button">
-                            <i class="bi bi-square"></i>
-                        </button>
-
-                        <button class="btn p-1 shape-btn" type="button">
-                            <i class="bi bi-triangle"></i>
-                        </button>
-
-                        <button class="btn p-1 shape-btn" type="button">
-                            <i class="bi bi-diamond"></i>
-                        </button>
-
-                        <button class="btn p-1 shape-btn" type="button">
-                            <i class="bi bi-pentagon"></i>
-                        </button>
-
-                        <button class="btn p-1 shape-btn" type="button">
-                            <i class="bi bi-hexagon"></i>
-                        </button>
-
-                        <button class="btn p-1 shape-btn" type="button">
-                            <i class="bi bi-star"></i>
-                        </button>
-
-                        <button class="btn p-1 shape-btn" type="button">
-                            <i class="bi bi-heart"></i>
-                        </button>
-
-                        <button class="btn p-1 shape-btn" type="button">
-                            <svg class="icon-rotate" width="16" height="16" viewBox="0 0 75 75" fill="currentColor">
-                                {% include 'elements/arrow.svg'%}
-                            </svg>
-                        </button>
-
-                        <button class="btn p-1 shape-btn" type="button">
-                            <i class="bi bi-chat"></i>
-                        </button>
-
-                        <button class="btn p-1 shape-btn" type="button">
-                            <i class="bi bi-chat-square"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Colors Card -->
-        <div class="card section-card d-none d-md-block">
-            <div class="card-body pt-0">
-                <div class="section-title card-title text-center py-1">Colors</div>
-                <div class="d-flex flex-row gap-3 align-items-center m-0 p-0">
-                    <div class="d-flex flex-column m-0 p-0">
-
-                        <div class="d-flex flex-row gap-2 pb-1 align-items-center">
-                            <button type="button" class="color-primary color-swatch me-2 selected" data-color="#000000" style="background-color: #000000;"></button>
-                            <!-- Main colors -->
-                            <button type="button" class="color-swatch" data-color="#4a4a4a" style="background-color: #4a4a4a;"></button>
-                            <button type="button" class="color-swatch" data-color="#c0c0c0" style="background-color: #c0c0c0;"></button>
-                            <button type="button" class="color-swatch" data-color="#8b0000" style="background-color: #8b0000;"></button>
-                            <button type="button" class="color-swatch" data-color="#ff5c8a" style="background-color: #ff5c8a;"></button>
-                            <button type="button" class="color-swatch" data-color="#ff9500" style="background-color: #ff9500;"></button>
-                            <button type="button" class="color-swatch" data-color="#ffd400" style="background-color: #ffd400;"></button>
-                            <button type="button" class="color-swatch" data-color="#34a853" style="background-color: #34a853;"></button>
-                            <button type="button" class="color-swatch" data-color="#4aa3df" style="background-color: #4aa3df;"></button>
-                            <button type="button" class="color-swatch" data-color="#5b5bd6" style="background-color: #5b5bd6;"></button>
-                            <button type="button" class="color-swatch" data-color="#9b59b6" style="background-color: #9b59b6;"></button>
-                        </div>
-                        <div class="d-flex flex-row gap-2 pt-1 align-items-center">
-                            
-                            <button type="button" class="color-secondary color-swatch me-2" data-color="#ffffff" style="background-color: #ffffff;"></button>
-                            <!-- Lighter row -->
-                            <button type="button" class="color-swatch" data-color="#ffffff" style="background-color: #ffffff;"></button>
-                            <button type="button" class="color-swatch" data-color="#f2f2f2" style="background-color: #f2f2f2;"></button>
-                            <button type="button" class="color-swatch" data-color="#f8d7da" style="background-color: #f8d7da;"></button>
-                            <button type="button" class="color-swatch" data-color="#f7a8b8" style="background-color: #f7a8b8;"></button>
-                            <button type="button" class="color-swatch" data-color="#ffd6a5" style="background-color: #ffd6a5;"></button>
-                            <button type="button" class="color-swatch" data-color="#fff3a3" style="background-color: #fff3a3;"></button>
-                            <button type="button" class="color-swatch" data-color="#b7e4c7" style="background-color: #b7e4c7;"></button>
-                            <button type="button" class="color-swatch" data-color="#a9d6f5" style="background-color: #a9d6f5;"></button>
-                            <button type="button" class="color-swatch" data-color="#bdb2ff" style="background-color: #7092BE;"></button>
-                            <button type="button" class="color-swatch" data-color="#d8b4f8" style="background-color: #C8BFE7;"></button>
-                        </div>
-                    </div>
-                    <!-- Custom picker -->
-                    <label class="color-picker-trigger">
-                        <input type="color" id="customColorPicker" class="d-none" value="#000000">
-                        <span class="custom-color-icon"></span>
-                    </label>
-                </div>
-            </div>
-        </div>
         <!-- Layer Card -->
         <div class="card section-card d-none d-md-block">
             <div class="card-body pt-0">
@@ -304,3 +49,21 @@
         </div>
     </div>
 </div>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    // =========================================
+    // General Button Selected
+    // =========================================   
+    const buttons = document.querySelectorAll(".btn-selectable");
+    buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            // remove selected from all
+            buttons.forEach(b => b.classList.remove("selected"));
+
+            // add selected to clicked one
+            btn.classList.add("selected");
+            btn.blur();
+        });
+    });
+});
+</script>
