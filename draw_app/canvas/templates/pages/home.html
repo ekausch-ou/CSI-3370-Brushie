@@ -1,4 +1,5 @@
 {% load static %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <html>
     <head>
         {% include 'elements/includes.html' %}
@@ -24,15 +25,11 @@
     <body>
         {% include 'elements/navbar.html' with active="home" %}
         <div class="d-flex flex-column" style="height: calc(100vh - 60px);">
-            <div class="d-flex flex-column container-fluid h-100" style="max-width: 90%; max-height: 95%;">
-                <div class="row justify-content-center h-100">                                
-                    <div class="card p-0 m-3 h-100">
-                        <div class="card-header">            
-                                <button class="btn btn-outline-primary" id="pencil-button">Pencil</button>
-                        </div>
-                        <div class="card-body p-0 h-100">
-                            <canvas id="drawing-canvas" style="width:100%; height:100%; display:block; overflow:hidden;"></canvas>
-                        </div>
+            <div class="d-flex flex-column container-fluid h-100">                           
+                {% include 'elements/tool-bar-card.html'%}
+                <div class="card p-0 my-3 h-100">
+                    <div class="card-body p-0 h-100">
+                        <canvas id="drawing-canvas" style="width:100%; height:100%; display:block; overflow:hidden;"></canvas>
                     </div>
                 </div>
             </div>
