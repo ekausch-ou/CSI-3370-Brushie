@@ -5,13 +5,15 @@ export class PencilTool extends BaseTool {
         super('pencil');
 
         this.isDrawing = false;
+        this.lastPoint = null;
     }
 
     onPointerDown(position, engine, event) {
+        console.log("Draw")
         this.isDrawing = true;
+        this.lastPoint = position;
 
-        const ctx = engine.ctx;
-
+        const ctx = engine.drawCtx;
         // LEFT CLICK = primary color
         if (event.button === 0) {
             ctx.strokeStyle = engine.activeColor ? engine.primaryColor : engine.secondaryColor;
@@ -29,17 +31,22 @@ export class PencilTool extends BaseTool {
     onPointerMove(position, engine) {
         if (!this.isDrawing) return;
 
-        const ctx = engine.ctx;
-
+        const ctx = engine.drawCtx;
         ctx.lineTo(position.x, position.y);
         ctx.stroke();
+
+        this.lastPoint = position;
     }
 
     onPointerUp(position, engine) {
         if (!this.isDrawing) return;
 
+        const ctx = engine.drawCtx;
+        ctx.lineTo(position.x, position.y);
+        ctx.stroke();
+        ctx.closePath();
+        
         this.isDrawing = false;
-
-        engine.ctx.closePath();
+        this.lastPoint = null;
     }
 }
