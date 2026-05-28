@@ -1,20 +1,50 @@
 import { CanvasEngine } from './core/engine.js';
+import { CanvasManager } from './core/manager.js';
+
 import { PencilTool } from './tools/pencil-tool.js';
+import { SelectionTool } from './tools/selection-tool.js';
 
-const canvas = document.getElementById('drawing-canvas');
+const backgroundCanvas = document.getElementById('bg-canvas');
+const drawingCanvas = document.getElementById('drawing-canvas');
+const overlayCanvas = document.getElementById('overlay-canvas');
 
-const engine = new CanvasEngine(canvas);
+overlayCanvas.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+});
 
-const pencilTool = new PencilTool();
+const engine = new CanvasEngine({
+    backgroundCanvas,
+    drawingCanvas,
+    overlayCanvas
+});
 
-engine.registerTool(pencilTool);
+const canvasManager = new CanvasManager();
 
-document
-    .getElementById('pencil-button')
-    .addEventListener('click', () => {
-        if (engine.getTool() == 'pencil') {
-            engine.clearTool('');
-        } else {
-            engine.setTool('pencil');
-        }
-    });
+canvasManager.initialize(engine);
+
+window.engine = engine;
+window.canvasManager = canvasManager;
+
+// Register Tools
+engine.registerTool(new PencilTool());
+engine.registerTool(new SelectionTool());
+
+
+canvasManager.createNewDrawing();
+
+// Tool Events
+document.getElementById('btn-pencil').addEventListener('click', () => {
+    if (engine.getActiveTool() === 'pencil') {
+        engine.clearTool();
+    } else {
+        engine.setTool('pencil');
+    }
+});
+
+document.getElementById('btn-selection').addEventListener('click', () => {
+    if (engine.getActiveTool() === 'selection') {
+        engine.clearTool();
+    } else {
+        engine.setTool('selection');
+    }
+});

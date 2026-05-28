@@ -1,0 +1,64 @@
+{% load static %}
+<!-- Selection Card -->
+<div id="selectionPopover" class="card section-card d-none d-md-block" style="min-width: 82px;">
+    <div class="card-body pt-0">
+        <div class="section-title card-title text-center py-1">Selection</div>
+        <button id="btn-selection" class="btn p-2 pb-1 d-flex flex-column" style="aspect-ratio: 1/1;">
+            <i class="bi bi-bounding-box-circles fs-2"></i>
+            <i class="bi bi-chevron-compact-down fs-6"></i>
+        </button>
+    </div>
+</div>
+<div id="selection-popover" class="d-none">
+  <div class="d-flex flex-column gap-2" style="width: 200px;">
+
+    <button id="btn-select-rectangle"  class="btn btn-light btn-outline-secondary text-dark d-flex align-items-center gap-2 w-100 text-start">
+      <img src="{% static 'assets/icons/rectangle.png' %}" width="16">
+      <span>Rectangle Select</span>
+    </button>
+
+    <button id="btn-select-free" class="btn btn-light btn-outline-secondary text-dark d-flex align-items-center gap-2 w-100 text-start">
+      <img src="{% static 'assets/icons/free-form.png' %}" width="16">
+      <span>Free Form Select</span>
+    </button>
+
+    <button id="btn-select-all" class="btn btn-light btn-outline-secondary text-dark d-flex align-items-center gap-2 w-100 text-start">
+      <img src="{% static 'assets/icons/select-all.png' %}" width="16">
+      <span>Select All</span>
+    </button>
+
+  </div>
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const selectionTrigger = document.getElementById("selectionPopover");
+    const selectionTemplate = document.getElementById("selection-popover");
+
+    // =========================================
+    // Selection Popover
+    // =========================================
+    const popover = new bootstrap.Popover(selectionTrigger, {
+        html: true,
+        placement: "bottom",
+        fallbackPlacements: [],
+        sanitize: false,
+        content: () => selectionTemplate.innerHTML
+    });
+
+    // =========================================
+    // Close on outside click
+    // =========================================
+    document.addEventListener("click", (e) => {
+        const pop = document.querySelector(".popover");
+        if (!pop) return;
+
+        // If click is outside both trigger and popover
+        if (
+            !pop.contains(e.target) &&
+            !selectionTrigger.contains(e.target)
+        ) {
+            popover.hide();
+        }
+    });
+});
+</script>

@@ -1,0 +1,287 @@
+<style>
+    /* Colors Formating */
+    .colors-grid {
+        display: grid;
+        grid-template-columns: repeat(11, 1fr);
+        gap: 0.5rem;
+        height: 100%;
+        align-content: center;
+    }
+    .color-swatch,
+    .custom-color-icon {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 1px solid #adb5bd;
+        padding: 0;
+        background-clip: padding-box;
+        cursor: pointer;
+        position: relative;
+    }
+    .color-swatch.selected {
+        outline: 3px solid #0d6efd;
+        outline-offset: 2px;
+    }
+
+    .color-swatch:hover,
+    .custom-color-icon:hover {
+        transform: scale(1.10);
+    }
+    .color-primary,
+    .color-secondary {
+        width: 28px;
+        height: 28px;
+    }
+    #customColorPicker {
+        position: fixed;
+        opacity: 0;
+        pointer-events: none;
+        width: 1px;
+        height: 1px;
+    }
+    .color-picker-trigger {
+        cursor: pointer;
+    }
+    .custom-color-icon {
+        width: 34px;
+        height: 34px;
+        display: inline-block;
+        background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
+    }
+    .custom-color-icon::after {
+        content: "+";
+        position: absolute;
+        right: -6px;
+        top: -8px;
+        font-size: 14px;
+        color: #6c757d;
+        font-weight: bold;
+        background: white;
+        border-radius: 50%;
+        line-height: 1;
+    }
+</style>
+<!-- Colors Card -->
+<div class="card section-card d-none d-md-block">
+    <div class="card-body pt-0">
+        <div class="section-title card-title text-center py-1">Colors</div>
+        <div class="d-flex flex-row gap-3 align-items-center m-0 p-0">
+            <div class="d-flex flex-column m-0 p-0">
+
+                <div class="d-flex flex-row gap-2 pb-1 align-items-center">
+                    <button type="button" class="color-primary color-swatch me-2 selected" data-color="#000000" style="background-color: #000000;"></button>
+                    <!-- Main colors -->
+                    <button type="button" class="color-swatch" data-color="#000000" style="background-color: #000000;"></button>
+                    <button type="button" class="color-swatch" data-color="#7F7F7F" style="background-color: #7F7F7F;"></button>
+                    <button type="button" class="color-swatch" data-color="#880015" style="background-color: #880015;"></button>
+                    <button type="button" class="color-swatch" data-color="#ED1C24" style="background-color: #ED1C24;"></button>
+                    <button type="button" class="color-swatch" data-color="#FF7F27" style="background-color: #FF7F27;"></button>
+                    <button type="button" class="color-swatch" data-color="#FFF200" style="background-color: #FFF200;"></button>
+                    <button type="button" class="color-swatch" data-color="#22B14C" style="background-color: #22B14C;"></button>
+                    <button type="button" class="color-swatch" data-color="#00A2E8" style="background-color: #00A2E8;"></button>
+                    <button type="button" class="color-swatch" data-color="#3F48CC" style="background-color: #3F48CC;"></button>
+                    <button type="button" class="color-swatch" data-color="#A349A4" style="background-color: #A349A4;"></button>
+                </div>
+                <div class="d-flex flex-row gap-2 pt-1 align-items-center">
+                    
+                    <button type="button" class="color-secondary color-swatch me-2" data-color="#ffffff" style="background-color: #ffffff;"></button>
+                    <!-- Lighter row -->
+                    <button type="button" class="color-swatch" data-color="#ffffff" style="background-color: #ffffff;"></button>
+                    <button type="button" class="color-swatch" data-color="#f2f2f2" style="background-color: #f2f2f2;"></button>
+                    <button type="button" class="color-swatch" data-color="#f8d7da" style="background-color: #f8d7da;"></button>
+                    <button type="button" class="color-swatch" data-color="#f7a8b8" style="background-color: #f7a8b8;"></button>
+                    <button type="button" class="color-swatch" data-color="#ffd6a5" style="background-color: #ffd6a5;"></button>
+                    <button type="button" class="color-swatch" data-color="#fff3a3" style="background-color: #fff3a3;"></button>
+                    <button type="button" class="color-swatch" data-color="#b7e4c7" style="background-color: #b7e4c7;"></button>
+                    <button type="button" class="color-swatch" data-color="#a9d6f5" style="background-color: #a9d6f5;"></button>
+                    <button type="button" class="color-swatch" data-color="#bdb2ff" style="background-color: #7092BE;"></button>
+                    <button type="button" class="color-swatch" data-color="#d8b4f8" style="background-color: #C8BFE7;"></button>
+                </div>
+            </div>
+            <!-- Custom picker -->
+            <div class="color-picker-trigger">
+                <!-- Trigger -->
+                <button id="customColorBtn"
+                        type="button"
+                        class="btn p-0 border-0 bg-transparent">
+                    <span class="custom-color-icon"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+let selectedColor = "#ffffff";
+let iroPicker = null;
+let primarySwatch, secondarySwatch;
+
+document.addEventListener("DOMContentLoaded", () => {
+    const toolbar = document.querySelector(".drawing-toolbar");
+    primarySwatch = document.querySelector(".color-primary");
+    secondarySwatch = document.querySelector(".color-secondary");
+
+    // =========================================
+    // Color Button Selected
+    // =========================================  
+    function selectSwatch(selected, other) {
+        other.classList.remove("selected");
+        selected.classList.add("selected");
+        selected.blur();
+    }
+
+    primarySwatch.addEventListener("click", () => {
+        selectSwatch(primarySwatch, secondarySwatch);
+        window.engine.activeColor = true;
+    });
+    
+    secondarySwatch.addEventListener("click", () => {
+        selectSwatch(secondarySwatch, primarySwatch);
+        window.engine.activeColor = false;
+    });
+
+    // =========================================
+    // Disable right click on swatches
+    // =========================================
+    toolbar.addEventListener("contextmenu", (e) => {
+        if (e.target.closest(".color-swatch")) {
+            e.preventDefault();
+        }
+    });
+
+    // =========================================
+    // Color Selection
+    // =========================================
+    toolbar.addEventListener("mousedown", (e) => {
+        const swatch = e.target.closest(".color-swatch");
+        if (!swatch) return;
+
+        if (
+            swatch.classList.contains("color-primary") ||
+            swatch.classList.contains("color-secondary")
+        ) {
+            return;
+        }
+
+        const color = swatch.dataset.color;
+        const primarySelected = primarySwatch.classList.contains("selected");
+
+        if (e.button === 0) {
+            setActiveColor(primarySelected ? "primary" : "secondary", color);
+        }
+
+        if (e.button === 2) {
+            setActiveColor(primarySelected ? "secondary" : "primary", color);
+        }
+
+        swatch.blur();
+    });
+
+    // =========================================
+    // Color Picker Popover
+    // =========================================
+    const triggerBtn = document.getElementById("customColorBtn");
+    const popover = new bootstrap.Popover(triggerBtn, {
+        html: true,
+        sanitize: false,
+        placement: "bottom",
+        trigger: "manual",
+        content: `
+            <div class="p-2" style="width:260px;">
+                <div id="iroPickerContainer"></div>
+                <div class="d-flex justify-content-end gap-2 mt-3">
+                    <button id="cancelColor" class="btn btn-sm btn-secondary">Cancel</button>
+                    <button id="okColor" class="btn btn-sm btn-primary">OK</button>
+                </div>
+            </div>
+        `
+    });
+
+    // =========================================
+    // Open / Close
+    // =========================================
+    triggerBtn.addEventListener("click", () => {
+        const existingPopover = document.querySelector(".popover");
+        // Toggle
+        if (existingPopover) {
+            popover.hide();
+            return;
+        }
+        popover.show();
+        setTimeout(() => {initIroPicker(popover);}, 100);
+    });
+
+    // =========================================
+    // Close on outside click
+    // =========================================
+    document.addEventListener("click", (e) => {
+        const pop = document.querySelector(".popover");
+        if (!pop) return;
+
+        if (!pop.contains(e.target) && !triggerBtn.contains(e.target)) {
+            popover.hide();
+        }
+    });
+
+});
+
+// =========================================
+// IRO Picker
+// =========================================
+// Reference: https://iro.js.org/
+function initIroPicker(popover) {
+    if (iroPicker) return;
+    iroPicker = new iro.ColorPicker("#iroPickerContainer", {
+        width: 220,
+        color: selectedColor,
+        layout: [
+            {
+                component: iro.ui.Wheel,
+            },
+            {
+                component: iro.ui.Slider,
+                options: {
+                    sliderType: "value"
+                }
+            }
+        ]
+    });
+
+    iroPicker.on("color:change", (color) => {
+        selectedColor = color.hexString;
+    });
+    // =========================================
+    // Buttons
+    // =========================================
+    document.getElementById("okColor").addEventListener("click", () => {
+        const primarySelected = primarySwatch.classList.contains("selected");
+
+        setActiveColor(
+            primarySelected ? "primary" : "secondary",
+            selectedColor
+        );
+
+        popover.hide();
+    });
+
+    document
+        .getElementById("cancelColor")
+        .addEventListener("click", () => {
+            popover.hide();
+        });
+};
+
+function setActiveColor(type, color) {
+    const swatch = type === "primary" ? primarySwatch : secondarySwatch;
+
+    // update UI
+    swatch.dataset.color = color;
+    swatch.style.backgroundColor = color;
+
+    // update engine
+    if (type === "primary") {
+        window.engine.primaryColor = color;
+    } else {
+        window.engine.secondaryColor = color;
+    }
+}
+</script>

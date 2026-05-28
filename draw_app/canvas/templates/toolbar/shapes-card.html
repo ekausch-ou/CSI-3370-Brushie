@@ -1,0 +1,86 @@
+<style>
+    /* Shapes Formating */
+    .shapes-scroll {
+        max-height: 60px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    .shapes-scroll::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .shapes-scroll::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .shapes-scroll::-webkit-scrollbar-thumb {
+        background: rgba(0,0,0,0.3);
+        border-radius: 10px;
+    }
+    .shape-btn {
+        aspect-ratio: 1 / 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+<!-- Shapes Card -->
+<div class="card section-card d-none d-md-block">
+    <div class="card-body pt-0">
+        <div class="section-title card-title text-center py-1">Shapes</div>
+        <!-- scrollable sub-card / inner panel -->
+        <div class="border rounded p-2 shapes-scroll">
+            <div class="d-grid gap-1 shapes-grid" style="grid-template-columns: repeat(4, 1fr);">
+                <button class="btn btn-selectable p-1 shape-btn" type="button">
+                    <i class="bi bi-slash-lg"></i>
+                </button>
+
+                <button class="btn btn-selectable p-1 shape-btn" type="button">
+                    <i class="bi bi-circle"></i>
+                </button>
+
+                <button class="btn btn-selectable p-1 shape-btn" type="button">
+                    <i class="bi bi-square"></i>
+                </button>
+
+                <button class="btn btn-selectable p-1 shape-btn" type="button">
+                    <i class="bi bi-triangle"></i>
+                </button>
+
+                <button class="btn btn-selectable p-1 shape-btn" type="button">
+                    <i class="bi bi-diamond"></i>
+                </button>
+
+                <button class="btn btn-selectable p-1 shape-btn" type="button">
+                    <i class="bi bi-pentagon"></i>
+                </button>
+
+                <button class="btn btn-selectable p-1 shape-btn" type="button">
+                    <i class="bi bi-hexagon"></i>
+                </button>
+
+                <button class="btn btn-selectable p-1 shape-btn" type="button">
+                    <i class="bi bi-star"></i>
+                </button>
+
+                <button class="btn btn-selectable p-1 shape-btn" type="button">
+                    <i class="bi bi-heart"></i>
+                </button>
+
+                <button class="btn btn-selectable p-1 shape-btn" type="button">
+                    <svg class="icon-rotate" width="16" height="16" viewBox="0 0 75 75" fill="currentColor">
+                        {% include 'elements/arrow.svg'%}
+                    </svg>
+                </button>
+
+                <button class="btn btn-selectable p-1 shape-btn" type="button">
+                    <i class="bi bi-chat"></i>
+                </button>
+
+                <button class="btn btn-selectable p-1 shape-btn" type="button">
+                    <i class="bi bi-chat-square"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

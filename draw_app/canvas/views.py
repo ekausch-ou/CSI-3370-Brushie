@@ -3,6 +3,7 @@ import copy
 import json
 
 from django.shortcuts import render, redirect
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from django.contrib.auth.models import User
@@ -36,4 +37,19 @@ def register(request):
 
     return render(request, "registration/register.html", {
         "form": form,
+        })
+
+@csrf_exempt
+def save_drawing(request):
+    if request.method == "POST":
+        body = json.loads(request.body)
+
+        drawing = Drawing.objects.create(
+            title="Untitled",
+            canvas_data=body["drawing"]
+        )
+
+        return JsonResponse({
+            "success": True,
+            "id": drawing.id
         })
