@@ -1,0 +1,54 @@
+<div id="newDrawingModal" class="modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New Drawing Settings</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form id="newDrawingForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="drawingWidth" class="form-label">Width (px)</label>
+                        <input type="number" class="form-control" id="drawingWidth" min="1" step="1" value="1920" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="drawingHeight" class="form-label">Height (px)</label>
+                        <input type="number" class="form-control" id="drawingHeight" min="1" step="1" value="1080" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="backgroundColor" class="form-label">Background Color</label>
+                        <input type="color" class="form-control form-control-color" id="backgroundColor" value="#ffffff">
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" id="createDrawingBtn">New</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+document.getElementById('newDrawingForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const form = document.getElementById('newDrawingForm');
+    const width = parseInt(document.getElementById('drawingWidth').value, 10);
+    const height = parseInt(document.getElementById('drawingHeight').value, 10);
+    const backgroundColor = document.getElementById('backgroundColor').value;
+
+    console.log({width, height, backgroundColor});
+
+    const modal = document.getElementById('newDrawingModal');
+    modal.addEventListener('hide.bs.modal', () => {
+        if (document.activeElement) {
+            document.activeElement.blur();
+        }
+    });
+    bootstrap.Modal.getOrCreateInstance(modal).hide();
+}); 
+</script>

@@ -23,7 +23,7 @@ const canvasManager = new CanvasManager();
 canvasManager.initialize(engine);
 
 window.engine = engine;
-window.canvasManager = canvasManager;
+window.manager = canvasManager;
 
 // Register Tools
 engine.registerTool(new PencilTool());
@@ -41,6 +41,21 @@ document.getElementById('btn-pencil').addEventListener('click', () => {
     }
 });
 
+document.getElementById('btn-selection').addEventListener('click', () => {
+    if (engine.getActiveTool() === 'selection') {
+        engine.clearTool();
+    } else {
+        engine.setTool('selection');
+    }
+});
+
+document.getElementById('btn-selection').addEventListener('click', () => {
+    if (engine.getActiveTool() === 'selection') {
+        engine.clearTool();
+    } else {
+        engine.setTool('selection');
+    }
+});
 document.getElementById('btn-selection').addEventListener('click', () => {
     if (engine.getActiveTool() === 'selection') {
         engine.clearTool();

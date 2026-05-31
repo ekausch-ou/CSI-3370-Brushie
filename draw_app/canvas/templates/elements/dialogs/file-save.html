@@ -1,0 +1,42 @@
+<div id="saveModal" class="modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Save Drawing</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form id="saveForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="saveFilename" class="form-label">Filename</label>
+                        <input type="text" class="form-control" id="saveFilename" value="drawing" required>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" id="saveBtn">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+document.getElementById('saveForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const form = document.getElementById('saveForm');
+    const filename = document.getElementById('saveFilename').value;
+
+    console.log({ filename });
+
+    const modal = document.getElementById('saveModal');
+    modal.addEventListener('hide.bs.modal', () => {
+        if (document.activeElement) {
+            document.activeElement.blur();
+        }
+    });
+    bootstrap.Modal.getOrCreateInstance(modal).hide();
+}); 
+</script>

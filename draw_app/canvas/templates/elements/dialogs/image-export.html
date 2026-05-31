@@ -1,0 +1,51 @@
+<div id="exportModal" class="modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Export Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form id="exportForm">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="exportFilename" class="form-label">Filename</label>
+                        <input type="text" class="form-control" id="exportFilename" value="drawing" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="exportFormat" class="form-label">Format</label>
+                        <select class="form-select" id="exportFormat">
+                            <option value="png">PNG</option>
+                            <option value="jpeg">JPEG</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" id="exportBtn">Export</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+document.getElementById('exportForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const form = document.getElementById('exportForm');
+    const filename = document.getElementById('exportFilename').value;
+    const format = document.getElementById('exportFormat').value;
+
+    console.log({ filename, format });
+
+    const modal = document.getElementById('exportModal');
+    modal.addEventListener('hide.bs.modal', () => {
+        if (document.activeElement) {
+            document.activeElement.blur();
+        }
+    });
+    bootstrap.Modal.getOrCreateInstance(modal).hide();
+}); 
+</script>

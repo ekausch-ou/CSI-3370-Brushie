@@ -1,7 +1,16 @@
 <!-- Toolbar / menu bar -->
+<style>
+    .navbar .btn:focus,
+    .navbar .btn:focus-visible,
+    .navbar .nav-link:focus,
+    .navbar .dropdown-toggle:focus {
+        outline: none;
+        box-shadow: none;
+    }
+</style>
 <nav class="navbar navbar-expand navbar-light bg-light border-bottom py-0">
     <div class="container-fluid">
-        <ul class="navbar-nav">
+        <ul class="navbar-nav gap-2">
 
             <!-- File -->
             <li class="nav-item dropdown">
@@ -9,26 +18,30 @@
                     File
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">New</a></li>
-                    <li><a class="dropdown-item" href="#">Open</a></li>
-                    <li><a class="dropdown-item" href="#">Save</a></li>
+                    <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#newDrawingModal">New</button></li>                    
+                    <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#saveModal">Save</button></li>
+                    <li><button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#loadModal">Load</button></li>
                 </ul>
             </li>
-            
             <!-- Undo -->
             <li class="nav-item">
-                <a class="nav-link" href="#">
-                    <i class="bi bi-arrow-counterclockwise"></i> Undo
-                </a>
+                <button id="undoButton" class="nav-link btn btn-link"><i class="bi bi-arrow-counterclockwise"></i> Undo</button>
             </li>
 
             <!-- Redo -->
             <li class="nav-item">
-                <a class="nav-link" href="#">
-                    <i class="bi bi-arrow-clockwise"></i> Redo
-                </a>
+                <button id="redoButton" class="nav-link btn btn-link"><i class="bi bi-arrow-clockwise"></i> Redo</button>
+            </li>
+
+            <!-- Export -->
+            <li class="nav-item">
+                <button class="nav-link btn btn-link" data-bs-toggle="modal" data-bs-target="#exportModal"><i class="bi bi-image"></i> Export</button>
             </li>
 
         </ul>
     </div>
 </nav>
+{% include 'elements/dialogs/new-drawing.html'%}
+{% include 'elements/dialogs/image-export.html'%}
+{% include 'elements/dialogs/file-save.html'%}
+{% include 'elements/dialogs/file-load.html'%}
