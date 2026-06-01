@@ -24,14 +24,16 @@
                 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary" id="exportBtn">Export</button>
+                    <button type="submit" class="btn btn-primary">Export</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 <script>
-document.getElementById('exportForm').addEventListener('submit', (e) => {
+document.getElementById('exportForm').addEventListener('submit', confirmExport);
+
+function confirmExport(e) {
     e.preventDefault();
 
     const form = document.getElementById('exportForm');
@@ -47,5 +49,5 @@ document.getElementById('exportForm').addEventListener('submit', (e) => {
         }
     });
     bootstrap.Modal.getOrCreateInstance(modal).hide();
-}); 
+}; 
 </script>

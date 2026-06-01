@@ -23,7 +23,9 @@
     </div>
 </div>
 <script>
-document.getElementById('saveForm').addEventListener('submit', (e) => {
+document.getElementById('saveForm').addEventListener('submit', confirmSave);
+
+function confirmSave(e) {
     e.preventDefault();
 
     const form = document.getElementById('saveForm');
@@ -38,5 +40,6 @@ document.getElementById('saveForm').addEventListener('submit', (e) => {
         }
     });
     bootstrap.Modal.getOrCreateInstance(modal).hide();
-}); 
+    window.manager.saveDrawing({ filename });
+}; 
 </script>

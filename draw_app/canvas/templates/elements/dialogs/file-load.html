@@ -6,34 +6,36 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
-            <form id="saveForm">
-                <div class="modal-body">
+            <div class="modal-body">
+                    <form id="saveForm">
                     <div class="mb-3">
                         <input type="file" id="fileLoader" class="form-control">
                     </div>
-                </div>
+                </form>
+            </div>
                 
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button class="btn btn-primary" onclick="loadFile()">Load</button>
-                </div>
-            </form>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button class="btn btn-primary" onclick="selectFile()">Load</button>
+            </div>
         </div>
     </div>
 </div>
 <script>
-function loadFile() {
+function selectFile() {
     const input = document.getElementById("fileLoader");
     const file = input.files[0];
 
     if (!file) return;
 
-    const reader = new FileReader();
-
-    reader.onload = function (e) {
-        console.log("Loaded file:", e.target.result);
-
-        bootstrap.Modal.getInstance(document.getElementById('openModal')).hide();
-    };
+    console.log("File loaded");
+    window.manager.loadDrawing(file);
+    const modal = document.getElementById('loadModal');
+    modal.addEventListener('hide.bs.modal', () => {
+        if (document.activeElement) {
+            document.activeElement.blur();
+        }
+    });
+    bootstrap.Modal.getOrCreateInstance(modal).hide();
 }
 </script>

@@ -48,5 +48,7 @@ export class PencilTool extends BaseTool {
         
         this.isDrawing = false;
         this.lastPoint = null;
+
+        engine.manager?.saveState();
     }
 }

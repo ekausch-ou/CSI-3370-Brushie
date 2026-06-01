@@ -33,7 +33,9 @@
     </div>
 </div>
 <script>
-document.getElementById('newDrawingForm').addEventListener('submit', (e) => {
+document.getElementById('newDrawingForm').addEventListener('submit', confirmDrawing);
+
+function confirmDrawing(e) {
     e.preventDefault();
 
     const form = document.getElementById('newDrawingForm');
@@ -50,5 +52,5 @@ document.getElementById('newDrawingForm').addEventListener('submit', (e) => {
         }
     });
     bootstrap.Modal.getOrCreateInstance(modal).hide();
-}); 
+}; 
 </script>

@@ -25,12 +25,12 @@
             </li>
             <!-- Undo -->
             <li class="nav-item">
-                <button id="undoButton" class="nav-link btn btn-link"><i class="bi bi-arrow-counterclockwise"></i> Undo</button>
+                <button id="undoButton" class="nav-link btn btn-link" onclick="clickUndo()"><i class="bi bi-arrow-counterclockwise"></i> Undo</button>
             </li>
 
             <!-- Redo -->
             <li class="nav-item">
-                <button id="redoButton" class="nav-link btn btn-link"><i class="bi bi-arrow-clockwise"></i> Redo</button>
+                <button id="redoButton" class="nav-link btn btn-link" onclick="clickRedo()"><i class="bi bi-arrow-clockwise"></i> Redo</button>
             </li>
 
             <!-- Export -->
@@ -45,3 +45,11 @@
 {% include 'elements/dialogs/image-export.html'%}
 {% include 'elements/dialogs/file-save.html'%}
 {% include 'elements/dialogs/file-load.html'%}
+<script>
+function clickUndo() {
+    window.manager.undoState();
+}
+function clickRedo() {
+    window.manager.redoState();
+}
+</script>

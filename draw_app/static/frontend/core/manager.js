@@ -10,7 +10,6 @@ export class CanvasManager {
         this.engine = engine;
     }
 
-    // Initial new canvas method, needs to integrate with a "new drawing" button/settings dialog
     createNewDrawing(settings = {}) {
         this.currentDrawing = {
             id: crypto.randomUUID(),
@@ -19,19 +18,55 @@ export class CanvasManager {
             background: settings.background || '#ffffff'
         };
 
-        this.engine.resizeAll();
+        this.engine.setCanvasSize(
+            this.currentDrawing.width,
+            this.currentDrawing.height
+        );
+
+        this.engine.setBackground(
+            this.currentDrawing.background
+        );
+
         this.engine.clearDrawing();
-        this.engine.renderBackground();
         this.engine.renderOverlay();
 
         this.clearHistory();
-    }
 
-    saveState(imageData) {
-        this.history.push(imageData);
+        this.saveState();
+    }
+    saveState() {
+        this.history.push(this.captureState());
+
+        if (this.history.length > 50) { // Limit memory usage
+            this.history.shift();
+        }
+
         this.redoStack = [];
     }
 
+    captureState() {
+        return this.engine.drawCtx.getImageData(
+            0,
+            0,
+            this.engine.drawingCanvas.width,
+            this.engine.drawingCanvas.height
+        );
+    }
+
+    restoreState(imageData) {
+        if (!imageData) return;
+
+        this.engine.clearDrawing();
+        this.engine.drawCtx.putImageData(imageData, 0, 0);
+    }
+
+    undoState() {
+        const state = this.undo();
+        if (state) {
+            this.restoreState(state);
+        }
+    }
+    
     undo() {
         if (this.history.length <= 1) return;
 
@@ -39,6 +74,14 @@ export class CanvasManager {
         this.redoStack.push(current);
 
         return this.history[this.history.length - 1];
+    }
+
+    redoState() {
+        const state = this.redo();
+
+        if (state) {
+            this.restoreState(state);
+        }
     }
 
     redo() {
@@ -50,40 +93,59 @@ export class CanvasManager {
         return restored;
     }
 
-    async saveDrawing() {
-        const payload = {
-            drawing: this.engine.drawingCanvas.toDataURL()
+    async saveDrawing(options) {
+        if (!this.engine) return;
+
+        const project = {
+            version: 1,
+            drawing: this.currentDrawing,
+
+            canvas: {
+                width: this.engine.drawingCanvas.width,
+                height: this.engine.drawingCanvas.height
+            },
+
+            image: this.engine.drawingCanvas.toDataURL("image/png")
         };
 
-        const response = await fetch('/api/drawings/save/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        });
+        const blob = new Blob(
+            [JSON.stringify(project)],
+            { type: "application/json" }
+        );
 
-        return response.json();
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = options.filename + ".brush" || "test.brush";
+        link.click();
+
+        URL.revokeObjectURL(url);
     }
+        
+    async loadDrawing(file) {
+        const text = await file.text();
+        const project = JSON.parse(text);
 
-    async loadDrawing(id) {
-        const response = await fetch(`/api/drawings/${id}/`);
-        const data = await response.json();
+        this.createNewDrawing(project.drawing);
 
-        const image = new Image();
+        const img = new Image();
 
-        image.onload = () => {
-            this.engine.drawCtx.clearRect(
+        img.onload = () => {
+            this.engine.clearDrawing();
+
+            this.engine.drawCtx.drawImage(
+                img,
                 0,
                 0,
-                this.engine.drawingCanvas.width,
-                this.engine.drawingCanvas.height
+                project.canvas.width,
+                project.canvas.height
             );
 
-            this.engine.drawCtx.drawImage(image, 0, 0);
+            this.clearHistory();
         };
 
-        image.src = data.drawing;
+        img.src = project.image;
     }
 
     clearHistory() {

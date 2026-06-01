@@ -8,6 +8,7 @@ export class CanvasEngine {
         this.drawCtx = drawingCanvas.getContext('2d', {willReadFrequently: true}); // Convert to array of layers? Possible better options
         this.overlayCtx = overlayCanvas.getContext('2d');
 
+        this.manager = null; // CanvasManager will set this when initialized
         // Tool
         this.tools = {};
         this.activeTool = null;
@@ -42,38 +43,6 @@ export class CanvasEngine {
 
         this.overlayCtx.lineCap = 'round';
         this.overlayCtx.lineJoin = 'round';
-    }
-
-    resizeAll() { 
-        const rect = this.drawingCanvas.getBoundingClientRect();
-
-        // Save content before resizing
-        const drawingSnapshot = this.drawingCanvas.width > 0 && this.drawingCanvas.height > 0 
-            ? this.drawCtx.getImageData(0, 0, this.drawingCanvas.width, this.drawingCanvas.height) : null;
-
-        // Resize canvases
-        [this.backgroundCanvas, this.drawingCanvas, this.overlayCanvas].forEach((canvas) => {
-            canvas.width = rect.width;
-            canvas.height = rect.height;
-        });
-
-        // Reinitialize canvas settings
-        this.setupContexts();
-
-        // Restore snapshot
-        if (drawingSnapshot) {
-            const safeWidth = Math.min(drawingSnapshot.width, this.drawingCanvas.width);
-            const safeHeight = Math.min(drawingSnapshot.height, this.drawingCanvas.height);
-
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = drawingSnapshot.width;
-            tempCanvas.height = drawingSnapshot.height;
-            const tempCtx = tempCanvas.getContext('2d');
-            tempCtx.putImageData(drawingSnapshot, 0, 0);
-
-            this.drawCtx.clearRect(0, 0, this.drawingCanvas.width, this.drawingCanvas.height);
-            this.drawCtx.drawImage(tempCanvas, 0, 0, safeWidth, safeHeight); // scale snapshot to new canvas
-        }
     }
 
     registerTool(tool) {
@@ -144,6 +113,56 @@ export class CanvasEngine {
         this.drawCtx.clearRect(0, 0, this.drawingCanvas.width, this.drawingCanvas.height);
     }
 
+    setCanvasSize(width, height) {
+        this.drawingCanvas.style.width = `${width}px`;
+        this.drawingCanvas.style.height = `${height}px`;
+
+        this.backgroundCanvas.style.width = `${width}px`;
+        this.backgroundCanvas.style.height = `${height}px`;
+
+        this.overlayCanvas.style.width = `${width}px`;
+        this.overlayCanvas.style.height = `${height}px`;
+
+        this.resizeAll();
+    }
+
+    resizeAll() { 
+        const rect = this.drawingCanvas.getBoundingClientRect();
+
+        // Save content before resizing
+        const drawingSnapshot = this.drawingCanvas.width > 0 && this.drawingCanvas.height > 0 
+            ? this.drawCtx.getImageData(0, 0, this.drawingCanvas.width, this.drawingCanvas.height) : null;
+
+        // Resize canvases
+        [this.backgroundCanvas, this.drawingCanvas, this.overlayCanvas].forEach((canvas) => {
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+        });
+
+        // Reinitialize canvas settings
+        this.setupContexts();
+
+        // Restore snapshot
+        if (drawingSnapshot) {
+            const safeWidth = Math.min(drawingSnapshot.width, this.drawingCanvas.width);
+            const safeHeight = Math.min(drawingSnapshot.height, this.drawingCanvas.height);
+
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = drawingSnapshot.width;
+            tempCanvas.height = drawingSnapshot.height;
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.putImageData(drawingSnapshot, 0, 0);
+
+            this.drawCtx.clearRect(0, 0, this.drawingCanvas.width, this.drawingCanvas.height);
+            this.drawCtx.drawImage(tempCanvas, 0, 0, safeWidth, safeHeight); // scale snapshot to new canvas
+        }
+    }
+
+    setBackground(color) {
+        this.backgroundColor = color;
+        this.renderBackground();
+    }
+
     renderBackground() {
         const ctx = this.bgCtx;
         const w = this.backgroundCanvas.width;
@@ -151,9 +170,8 @@ export class CanvasEngine {
 
         ctx.clearRect(0, 0, w, h);
 
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = this.backgroundColor || '#ffffff';
         ctx.fillRect(0, 0, w, h);
-        ctx.restore();
     }
 
     renderDrawing() {
