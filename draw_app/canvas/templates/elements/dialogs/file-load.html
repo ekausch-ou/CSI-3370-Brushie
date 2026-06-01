@@ -1,0 +1,41 @@
+<div id="loadModal" class="modal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Load Drawing</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                    <form id="saveForm">
+                    <div class="mb-3">
+                        <input type="file" id="fileLoader" class="form-control">
+                    </div>
+                </form>
+            </div>
+                
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button class="btn btn-primary" onclick="selectFile()">Load</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+function selectFile() {
+    const input = document.getElementById("fileLoader");
+    const file = input.files[0];
+
+    if (!file) return;
+
+    console.log("File loaded");
+    window.manager.loadDrawing(file);
+    const modal = document.getElementById('loadModal');
+    modal.addEventListener('hide.bs.modal', () => {
+        if (document.activeElement) {
+            document.activeElement.blur();
+        }
+    });
+    bootstrap.Modal.getOrCreateInstance(modal).hide();
+}
+</script>

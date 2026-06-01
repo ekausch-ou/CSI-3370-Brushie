@@ -10,4 +10,9 @@ export class BaseTool {
     onPointerDown(position, engine, event) {}
     onPointerMove(position, engine, event) {}
     onPointerUp(position, engine, event) {}
+
+    updateToolSettings(settings) {
+        
+    }
+
 }

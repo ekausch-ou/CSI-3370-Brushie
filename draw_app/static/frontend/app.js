@@ -19,11 +19,11 @@ const engine = new CanvasEngine({
 });
 
 const canvasManager = new CanvasManager();
-
 canvasManager.initialize(engine);
+engine.manager = canvasManager;
 
 window.engine = engine;
-window.canvasManager = canvasManager;
+window.manager = canvasManager;
 
 // Register Tools
 engine.registerTool(new PencilTool());
