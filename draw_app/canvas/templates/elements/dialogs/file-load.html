@@ -29,7 +29,7 @@ function selectFile() {
     if (!file) return;
 
     console.log("File loaded");
-    window.manager.loadDrawing(file);
+    window.manager.loadFromFile(file);
     const modal = document.getElementById('loadModal');
     modal.addEventListener('hide.bs.modal', () => {
         if (document.activeElement) {

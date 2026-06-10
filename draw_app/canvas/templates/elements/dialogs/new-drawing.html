@@ -43,8 +43,8 @@ function confirmDrawing(e) {
     const height = parseInt(document.getElementById('drawingHeight').value, 10);
     const backgroundColor = document.getElementById('backgroundColor').value;
 
-    console.log({width, height, backgroundColor});
-
+    manager.createNewDrawing({width, height, backgroundColor});
+    
     const modal = document.getElementById('newDrawingModal');
     modal.addEventListener('hide.bs.modal', () => {
         if (document.activeElement) {
