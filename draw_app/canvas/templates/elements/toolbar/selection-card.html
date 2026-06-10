@@ -4,7 +4,7 @@
 <div id="selectionPopover" class="card section-card d-none d-md-block" style="min-width: 82px;">
     <div class="card-body pt-0">
         <div class="section-title card-title text-center py-1">Selection</div>
-        <button id="btn-selection" class="btn p-2 pb-1 d-flex flex-column" style="aspect-ratio: 1/1;">
+        <button id="btn-selection" class="btn p-2 pb-1 d-flex flex-column" style="aspect-ratio: 1/1;" disabled>
             <i class="bi bi-bounding-box-circles fs-2"></i>
             <i class="bi bi-chevron-compact-down fs-6"></i>
         </button>
@@ -13,17 +13,17 @@
 <div id="selection-popover" class="d-none">
   <div class="d-flex flex-column gap-2" style="width: 200px;">
 
-    <button id="btn-select-rectangle"  class="btn btn-light btn-outline-secondary text-dark d-flex align-items-center gap-2 w-100 text-start">
+    <button id="btn-select-rectangle"  class="btn btn-light btn-outline-secondary text-dark d-flex align-items-center gap-2 w-100 text-start" disabled>
       <img src="{% static 'assets/icons/rectangle.png' %}" width="16">
       <span>Rectangle Select</span>
     </button>
 
-    <button id="btn-select-free" class="btn btn-light btn-outline-secondary text-dark d-flex align-items-center gap-2 w-100 text-start">
+    <button id="btn-select-free" class="btn btn-light btn-outline-secondary text-dark d-flex align-items-center gap-2 w-100 text-start" disabled>
       <img src="{% static 'assets/icons/free-form.png' %}" width="16">
       <span>Free Form Select</span>
     </button>
 
-    <button id="btn-select-all" class="btn btn-light btn-outline-secondary text-dark d-flex align-items-center gap-2 w-100 text-start">
+    <button id="btn-select-all" class="btn btn-light btn-outline-secondary text-dark d-flex align-items-center gap-2 w-100 text-start" disabled>
       <img src="{% static 'assets/icons/select-all.png' %}" width="16">
       <span>Select All</span>
     </button>

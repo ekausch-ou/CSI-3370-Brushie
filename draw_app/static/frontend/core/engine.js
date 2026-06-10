@@ -18,11 +18,6 @@ export class CanvasEngine {
         this.secondaryColor = "#ffffff";
         this.activeColor = true;
 
-        // Selection
-        this.selection = null;
-        this.selectionImageData = null;
-        this.selectionFloating = null;
-
         this.setupContexts();
         this.resizeAll();
         this.bindEvents();
@@ -188,86 +183,5 @@ export class CanvasEngine {
             this.drawSelectionBox(this.selection);
             this.drawSelectionHandles(this.selection);
         }
-    }
-
-    drawSelectionBox(bounds) {
-        const ctx = this.overlayCtx;
-        ctx.save();
-        ctx.strokeStyle = '#2a7fff';
-        ctx.lineWidth = 1;
-        ctx.setLineDash([6, 4]);
-        ctx.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height);
-        ctx.restore();
-    }
-
-    drawSelectionHandles(bounds) {
-        const ctx = this.overlayCtx;
-        const size = 8;
-        const handles = this.getSelectionHandles(bounds);
-
-        ctx.save();
-        ctx.fillStyle = '#ffffff';
-        ctx.strokeStyle = '#2a7fff';
-        ctx.lineWidth = 1;
-
-        handles.forEach((h) => {
-            ctx.fillRect(h.x - size / 2, h.y - size / 2, size, size);
-            ctx.strokeRect(h.x - size / 2, h.y - size / 2, size, size);
-        });
-
-        ctx.restore();
-    }
-
-    getSelectionHandles(bounds) {
-        const { x, y, width, height } = bounds;
-        const cx = x + width / 2;
-        const cy = y + height / 2;
-
-        return [
-            { name: 'nw', x, y },
-            { name: 'n', x: cx, y },
-            { name: 'ne', x: x + width, y },
-            { name: 'e', x: x + width, y: cy },
-            { name: 'se', x: x + width, y: y + height },
-            { name: 's', x: cx, y: y + height },
-            { name: 'sw', x, y: y + height },
-            { name: 'w', x, y: cy }
-        ];
-    }
-
-    pointInRect(point, rect) {
-        return (
-            point.x >= rect.x &&
-            point.x <= rect.x + rect.width &&
-            point.y >= rect.y &&
-            point.y <= rect.y + rect.height
-        );
-    }
-
-    pointInSelection(point) {
-        if (!this.selection) return false;
-        return this.pointInRect(point, this.selection);
-    }
-
-    getHandleAtPoint(point) {
-        if (!this.selection) return null;
-
-        const size = 8;
-        const handles = this.getSelectionHandles(this.selection);
-
-        for (const handle of handles) {
-            const rect = {
-                x: handle.x - size / 2,
-                y: handle.y - size / 2,
-                width: size,
-                height: size
-            };
-
-            if (this.pointInRect(point, rect)) {
-                return handle.name;
-            }
-        }
-
-        return null;
     }
 }

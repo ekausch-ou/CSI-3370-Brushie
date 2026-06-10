@@ -1,0 +1,24 @@
+{
+  "name": "csi-3370-canvas",
+  "version": "1.0.0",
+  "description": "The recommended way to work with this project is to use a Python virtual environment (`venv`) so dependencies remain isolated from your system Python installation.",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest",
+    "test:watch": "vitest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ekausch-ou/CSI-3370.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ekausch-ou/CSI-3370/issues"
+  },
+  "homepage": "https://github.com/ekausch-ou/CSI-3370#readme",
+  "devDependencies": {
+    "vitest": "^4.1.8"
+  }
+}
