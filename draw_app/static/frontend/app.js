@@ -2,7 +2,6 @@ import { CanvasEngine } from './core/engine.js';
 import { CanvasManager } from './core/manager.js';
 
 import { PencilTool } from './tools/pencil-tool.js';
-import { SelectionTool } from './tools/selection-tool.js';
 
 const backgroundCanvas = document.getElementById('bg-canvas');
 const drawingCanvas = document.getElementById('drawing-canvas');
@@ -27,8 +26,6 @@ window.manager = canvasManager;
 
 // Register Tools
 engine.registerTool(new PencilTool());
-engine.registerTool(new SelectionTool());
-
 
 canvasManager.createNewDrawing();
 
@@ -38,13 +35,5 @@ document.getElementById('btn-pencil').addEventListener('click', () => {
         engine.clearTool();
     } else {
         engine.setTool('pencil');
-    }
-});
-
-document.getElementById('btn-selection').addEventListener('click', () => {
-    if (engine.getActiveTool() === 'selection') {
-        engine.clearTool();
-    } else {
-        engine.setTool('selection');
     }
 });

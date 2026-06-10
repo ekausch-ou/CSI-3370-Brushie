@@ -13,8 +13,8 @@ export class CanvasManager {
     createNewDrawing(settings = {}) {
         this.currentDrawing = {
             id: crypto.randomUUID(),
-            width: settings.width || 800,
-            height: settings.height || 600,
+            width: settings.width || 1920,
+            height: settings.height || 1080,
             background: settings.background || '#ffffff'
         };
 
