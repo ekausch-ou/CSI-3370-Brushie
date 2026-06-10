@@ -1,9 +1,14 @@
+import { Drawing } from './drawing.js';
+import { Snapshot } from './snapshot.js';
+import { FileManager } from './file-manager.js';
+
 export class CanvasManager {
-    constructor() {
+    constructor(fileManager = new FileManager()) {
         this.currentDrawing = null;
         this.engine = null;
         this.history = [];
-        this.redoStack = [];
+        this.historyIndex = -1;
+        this.fileManager = fileManager;
     }
 
     initialize(engine) {
@@ -11,12 +16,11 @@ export class CanvasManager {
     }
 
     createNewDrawing(settings = {}) {
-        this.currentDrawing = {
-            id: crypto.randomUUID(),
-            width: settings.width || 1920,
-            height: settings.height || 1080,
-            background: settings.background || '#ffffff'
-        };
+        this.currentDrawing = new Drawing({
+            width: settings.width,
+            height: settings.height,
+            backgroundColor: settings.backgroundColor || settings.background
+        });
 
         this.engine.setCanvasSize(
             this.currentDrawing.width,
@@ -24,116 +28,105 @@ export class CanvasManager {
         );
 
         this.engine.setBackground(
-            this.currentDrawing.background
+            this.currentDrawing.backgroundColor
         );
 
         this.engine.clearDrawing();
         this.engine.renderOverlay();
 
-        this.clearHistory();
-
+        this.history = [];
+        this.historyIndex = -1;
         this.saveState();
     }
+
     saveState() {
-        this.history.push(this.captureState());
+        const snapshot = Snapshot.capture(this.engine);
 
-        if (this.history.length > 50) { // Limit memory usage
+        // Remove future history if we save after undo
+        if (this.historyIndex < this.history.length - 1) {
+            this.history = this.history.slice(0, this.historyIndex + 1);
+        }
+
+        this.history.push(snapshot);
+
+        // Limit memory usage
+        if (this.history.length > 50) {
             this.history.shift();
+        } else {
+            this.historyIndex++;
         }
 
-        this.redoStack = [];
-    }
-
-    captureState() {
-        return this.engine.drawCtx.getImageData(
-            0,
-            0,
-            this.engine.drawingCanvas.width,
-            this.engine.drawingCanvas.height
-        );
-    }
-
-    restoreState(imageData) {
-        if (!imageData) return;
-
-        this.engine.clearDrawing();
-        this.engine.drawCtx.putImageData(imageData, 0, 0);
-    }
-
-    undoState() {
-        const state = this.undo();
-        if (state) {
-            this.restoreState(state);
+        if (this.history.length === 50) {
+            this.historyIndex = this.history.length - 1;
         }
     }
-    
+
     undo() {
-        if (this.history.length <= 1) return;
-
-        const current = this.history.pop();
-        this.redoStack.push(current);
-
-        return this.history[this.history.length - 1];
-    }
-
-    redoState() {
-        const state = this.redo();
-
-        if (state) {
-            this.restoreState(state);
-        }
+        if (this.historyIndex <= 0) return;
+        this.historyIndex--;
+        this.history[this.historyIndex].restore(this.engine);
     }
 
     redo() {
-        if (this.redoStack.length === 0) return;
-
-        const restored = this.redoStack.pop();
-        this.history.push(restored);
-
-        return restored;
+        if (this.historyIndex >= this.history.length - 1) return;
+        this.historyIndex++;
+        this.history[this.historyIndex].restore(this.engine);
     }
 
-    async saveDrawing(options) {
-        if (!this.engine) return;
+    revertHistory() {
+        this.undo();
+    }
 
-        const project = {
+    advanceHistory() {
+        this.redo();
+    }
+
+    serializeDrawing() {
+        return JSON.stringify({
             version: 1,
             drawing: this.currentDrawing,
-
             canvas: {
                 width: this.engine.drawingCanvas.width,
                 height: this.engine.drawingCanvas.height
             },
-
             image: this.engine.drawingCanvas.toDataURL("image/png")
-        };
-
-        const blob = new Blob(
-            [JSON.stringify(project)],
-            { type: "application/json" }
-        );
-
-        const url = URL.createObjectURL(blob);
-
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = options.filename + ".brush" || "test.brush";
-        link.click();
-
-        URL.revokeObjectURL(url);
+        });
     }
-        
-    async loadDrawing(file) {
-        const text = await file.text();
-        const project = JSON.parse(text);
 
-        this.createNewDrawing(project.drawing);
+    deserializeDrawing(data) {
+        const project = JSON.parse(data);
+
+        return new Drawing({
+            id: project.drawing.id,
+            width: project.drawing.width,
+            height: project.drawing.height,
+            backgroundColor:
+                project.drawing.backgroundColor || project.drawing.background,
+            elements: project.drawing.elements || []
+        });
+    }
+
+    saveToFile(options) {
+        if (!this.engine) return;
+
+        data = this.serializeDrawing()
+        this.fileManager.writeExportFile(data, options)
+    }
+
+    async loadFromFile(file) {
+        const data = await this.fileManager.readFile(file);
+        const project = JSON.parse(data);
+
+        this.currentDrawing = this.deserializeDrawing(data);
+
+        this.engine.setCanvasSize(project.canvas.width, project.canvas.height);
+        this.engine.setBackground(this.currentDrawing.backgroundColor);
+        this.engine.clearDrawing();
+        this.engine.renderOverlay();
 
         const img = new Image();
-
         img.onload = () => {
             this.engine.clearDrawing();
-
             this.engine.drawCtx.drawImage(
                 img,
                 0,
@@ -143,13 +136,48 @@ export class CanvasManager {
             );
 
             this.clearHistory();
+            this.saveState();
         };
-
         img.src = project.image;
     }
 
+    saveToFile(options = {}) {
+        const data = this.serializeDrawing();
+        this.fileManager.writeFile(data, {
+            filename: options.filename || "drawing.brush",
+            type: "application/json"
+        });
+    }
+
+    renderImage(options = {}) {
+        // Canvas to composite background and drawing (layers in the future)
+        const exportCanvas = document.createElement("canvas");
+        exportCanvas.width = this.engine.drawingCanvas.width;
+        exportCanvas.height = this.engine.drawingCanvas.height;
+
+        const ctx = exportCanvas.getContext("2d");
+
+        // Background
+        ctx.fillStyle = this.engine.backgroundColor || "#ffffff";
+        ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+
+        // Drawing layer
+        ctx.drawImage(this.engine.drawingCanvas, 0, 0);
+
+        const image = exportCanvas.toDataURL(
+            options.format,
+            0.90
+        );
+
+        return this.fileManager.writeExportFile(image, {
+            filename:
+                options.filename ||
+                `export.${options.format === "jpeg" ? "jpg" : "png"}`
+        });
+    }
+    
     clearHistory() {
         this.history = [];
-        this.redoStack = [];
+        this.historyIndex = -1;
     }
 }
