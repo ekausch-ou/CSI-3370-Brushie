@@ -18,6 +18,13 @@ export class CanvasEngine {
         this.secondaryColor = "#ffffff";
         this.activeColor = true;
 
+        // Pan/Zoom
+        this.scale = 1;
+        this.minScale = 1;
+        this.maxScale = 8;
+        this.offsetX = 0;
+        this.offsetY = 0;
+
         this.setupContexts();
         this.resizeAll();
         this.bindEvents();
@@ -58,9 +65,10 @@ export class CanvasEngine {
 
     getPointerPosition(event) {
         const rect = this.overlayCanvas.getBoundingClientRect();
+
         return {
-            x: event.clientX - rect.left,
-            y: event.clientY - rect.top
+            x: ((event.clientX - rect.left) / rect.width) * this.overlayCanvas.width,
+            y: ((event.clientY - rect.top) / rect.height) * this.overlayCanvas.height
         };
     }
 
@@ -119,6 +127,7 @@ export class CanvasEngine {
         this.overlayCanvas.style.height = `${height}px`;
 
         this.resizeAll();
+        this.applyViewportTransform();
     }
 
     resizeAll() { 
@@ -183,5 +192,34 @@ export class CanvasEngine {
             this.drawSelectionBox(this.selection);
             this.drawSelectionHandles(this.selection);
         }
+    }
+
+    applyViewportTransform() {
+        const transform = `translate(${this.offsetX}px, ${this.offsetY}px) scale(${this.scale})`;
+
+        [this.backgroundCanvas, this.drawingCanvas, this.overlayCanvas].forEach((canvas) => {
+            canvas.style.transformOrigin = '0 0';
+            canvas.style.transform = transform;
+        });
+    }
+
+    pan(dx, dy) {
+        this.offsetX += dx;
+        this.offsetY += dy;
+        this.applyViewportTransform();
+    }
+
+    zoomTo(scale, origin = { x: 0, y: 0 }) {
+        const limitedScale = Math.max(this.minScale, Math.min(this.maxScale, scale));
+        const prevScale = this.scale;
+
+        if (limitedScale === prevScale) return;
+
+        // Keep the zoom centered around the origin
+        this.offsetX = origin.x - ((origin.x - this.offsetX) * (limitedScale / prevScale));
+        this.offsetY = origin.y - ((origin.y - this.offsetY) * (limitedScale / prevScale));
+
+        this.scale = limitedScale;
+        this.applyViewportTransform();
     }
 }
