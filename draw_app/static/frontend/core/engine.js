@@ -94,6 +94,14 @@ export class CanvasEngine {
         if (!this.activeTool) return;
             this.activeTool.onPointerUp(this.getPointerPosition(event), this, event);
         });
+
+         this.overlayCanvas.addEventListener('wheel', (event) => {
+        if (!this.activeTool) return;
+
+        if (this.activeTool.onWheel) {
+            this.activeTool.onWheel(event, this);
+        }
+    });
     }
 
     setStrokeStyle(color) {
